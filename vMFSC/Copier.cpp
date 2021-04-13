@@ -1,4 +1,5 @@
-﻿#include "Copier.h"
+﻿#include <QFile>
+#include "Copier.h"
 
 Copier::Copier(const QList<QPair<QString, QString>>& files, const QString& format, const QString& destinationDir)
 	: mFiles(files), mFormat(format), mDestinationDir(destinationDir)

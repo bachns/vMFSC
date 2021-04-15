@@ -21,11 +21,13 @@ void Scanner::run()
 		QDateTime dateTime = fileInfo.lastModified();
 		if (re.exactMatch(name))
 		{
-			if (mParentDir)
+			int level = mParentDirLevel;
+			while (level)
 			{
 				QDir dir(path);
 				dir.cd("..");
 				path = dir.path();
+				level--;
 			}
 			emit detection(name, path, dateTime);
 		}

@@ -12,7 +12,7 @@ public:
 	QString mFolder;
 	QString mRegExp;
 	bool mFileFilter = true;
-	bool mParentDir = true;
+	int mParentDirLevel = 0;
 	QString mFormat;
 
 private slots:

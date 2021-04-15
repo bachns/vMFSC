@@ -59,7 +59,7 @@ void MainWindow::scan()
 	scanner->mFolder = scanDirLineEdit->text();
 	scanner->mRegExp = regExpLineEdit->text();
 	scanner->mFileFilter = fileRadioButton->isChecked();
-	scanner->mParentDir = parentCheckBox->isChecked();
+	scanner->mParentDirLevel = parentLevelSpinBox->value();
 
 	QThread* thread = new QThread;
 	scanner->moveToThread(thread);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>600</height>
+    <width>1030</width>
+    <height>721</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,10 @@
           <widget class="QPushButton" name="scanDirBrowserButton">
            <property name="text">
             <string>Chọn...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="MainWindow.qrc">
+             <normaloff>:/icons/folder.svg</normaloff>:/icons/folder.svg</iconset>
            </property>
           </widget>
          </item>
@@ -117,35 +121,26 @@
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
-        <widget class="QLineEdit" name="fileFormatLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QRadioButton" name="fileRadioButton">
          <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string>pdf</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="fileCheckBox">
-         <property name="text">
-          <string>Cho tên tệp tin có định dạng:</string>
+          <string>Cho tệp tin</string>
          </property>
          <property name="checked">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="folderCheckBox">
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="folderRadioButton">
          <property name="text">
-          <string>Cho tên các thư mục</string>
+          <string>Cho thư mục</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="parentCheckBox">
+         <property name="text">
+          <string>Chọn thư mục cha</string>
          </property>
         </widget>
        </item>
@@ -153,179 +148,157 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="scanButton">
-          <property name="text">
-           <string>Quét</string>
-          </property>
-          <property name="icon">
-           <iconset resource="MainWindow.qrc">
-            <normaloff>:/icons/scan.svg</normaloff>:/icons/scan.svg</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="fileProgressLineEdit"/>
+       <widget class="QPushButton" name="scanButton">
+        <property name="text">
+         <string>Quét</string>
+        </property>
+        <property name="icon">
+         <iconset resource="MainWindow.qrc">
+          <normaloff>:/icons/scan.svg</normaloff>:/icons/scan.svg</iconset>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
     <item row="2" column="0" colspan="2">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QGroupBox" name="resultGroupBox">
-        <property name="title">
-         <string>Kết quả quét</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QTableView" name="resultTableView"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="resultTotalLabel">
-           <property name="text">
-            <string>Số lượng: 0</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+         <widget class="QGroupBox" name="resultGroupBox">
+          <property name="title">
+           <string>Kết quả quét</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="removeButton">
-          <property name="text">
-           <string>[&lt;] Bỏ</string>
-          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QTableView" name="resultTableView"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="addButton">
-          <property name="text">
-           <string>Chọn [&gt;]</string>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="removeButton">
+            <property name="text">
+             <string>[&lt;] Bỏ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addButton">
+            <property name="text">
+             <string>Chọn [&gt;]</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addFromFileButton">
+            <property name="text">
+             <string>Chọn từ tệp...[&gt;]</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="removeAllButton">
+            <property name="text">
+             <string>[&lt;&lt;] Bỏ hết</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addAllButton">
+            <property name="text">
+             <string>Chọn hết [&gt;&gt;]</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="addFromFileButton">
-          <property name="text">
-           <string>Chọn từ tệp...[&gt;]</string>
+         <widget class="QGroupBox" name="copyGroupBox">
+          <property name="title">
+           <string>Kết quả chọn</string>
           </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="1" column="2">
+            <widget class="QPushButton" name="copyDirBrowserButton">
+             <property name="text">
+              <string>Chọn...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="MainWindow.qrc">
+               <normaloff>:/icons/folder.svg</normaloff>:/icons/folder.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="copyDirLineEdit"/>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QTableView" name="copyTableView"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="copyDirLabel">
+             <property name="text">
+              <string>Sao chép tới:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="removeAllButton">
-          <property name="text">
-           <string>[&lt;&lt;] Bỏ hết</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="addAllButton">
-          <property name="text">
-           <string>Chọn hết [&gt;&gt;]</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="copyGroupBox">
-        <property name="title">
-         <string>Lựa chọn để sao chép</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="2" column="0">
-          <widget class="QLabel" name="copyDirLabel">
-           <property name="text">
-            <string>Sao chép tới:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QTableView" name="copyTableView"/>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="copyDirLineEdit"/>
-         </item>
-         <item row="2" column="2">
-          <widget class="QPushButton" name="copyDirBrowserButton">
-           <property name="text">
-            <string>Chọn...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QLabel" name="copyTotalLabel">
-           <property name="text">
-            <string>Số lượng: 0</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
+      </widget>
+      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+     </widget>
     </item>
     <item row="3" column="0" colspan="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLabel" name="noticeLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QProgressBar" name="progressBar">
         <property name="sizePolicy">
@@ -340,15 +313,32 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="copyButton">
-        <property name="text">
-         <string>Tiến hành sao chép</string>
-        </property>
-        <property name="icon">
-         <iconset resource="MainWindow.qrc">
-          <normaloff>:/icons/start.svg</normaloff>:/icons/start.svg</iconset>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="noticeLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="copyButton">
+          <property name="text">
+           <string>Tiến hành sao chép</string>
+          </property>
+          <property name="icon">
+           <iconset resource="MainWindow.qrc">
+            <normaloff>:/icons/start.svg</normaloff>:/icons/start.svg</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>

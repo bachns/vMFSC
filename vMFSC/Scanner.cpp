@@ -2,7 +2,6 @@
 #include <QDirIterator>
 #include <QRegExp>
 #include <QDateTime>
-#include <QDebug>
 
 Scanner::Scanner()
 {
@@ -11,23 +10,25 @@ Scanner::Scanner()
 void Scanner::run()
 {
 	emit started();
-
 	QRegExp re(mRegExp);
-	QDirIterator it(mFolder, QStringList() << mFormat, QDir::Files, QDirIterator::Subdirectories);
+	QDirIterator it(mFolder, mFileFilter ? QDir::Files : QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 	while (it.hasNext())
 	{
-		const QString& filePath = it.next();
-		emit notice(filePath);
-
-		QFileInfo fileInfo(filePath);
-		QString& name = fileInfo.baseName();
+		QString path = it.next();
+		emit notice(path);
+		QFileInfo fileInfo(path);
+		QString& name = fileInfo.fileName();
 		QDateTime dateTime = fileInfo.lastModified();
-
-		if (re.exactMatch(fileInfo.baseName()))
+		if (re.exactMatch(name))
 		{
-			emit detection(name, filePath, dateTime);
+			if (mParentDir)
+			{
+				QDir dir(path);
+				dir.cd("..");
+				path = dir.path();
+			}
+			emit detection(name, path, dateTime);
 		}
 	}
-
 	emit finished();
 }

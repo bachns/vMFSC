@@ -9,13 +9,11 @@
 #include <QStandardItemModel>
 #include <QMessageBox>
 #include <QTextStream>
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setupUi(this);
-	fileProgressLineEdit->hide();
 	progressBar->hide();
 	connect(scanDirBrowserButton, &QPushButton::clicked, this, &MainWindow::selectScanDir);
 	connect(copyDirBrowserButton, &QPushButton::clicked, this, &MainWindow::selectCopyDir);
@@ -60,12 +58,8 @@ void MainWindow::scan()
 	Scanner* scanner = new Scanner;
 	scanner->mFolder = scanDirLineEdit->text();
 	scanner->mRegExp = regExpLineEdit->text();
-	scanner->mFileFilter = fileCheckBox->isChecked();
-	scanner->mFolderFilter = folderCheckBox->isChecked();
-	QString format = fileFormatLineEdit->text().trimmed();
-	if (format.isEmpty())
-		format = "pdf";
-	scanner->mFormat = QString("*.%1").arg(format);
+	scanner->mFileFilter = fileRadioButton->isChecked();
+	scanner->mParentDir = parentCheckBox->isChecked();
 
 	QThread* thread = new QThread;
 	scanner->moveToThread(thread);
@@ -85,18 +79,22 @@ void MainWindow::scan()
 
 void MainWindow::copy()
 {
+	QString dstDir = copyDirLineEdit->text().trimmed();
+	if (dstDir.isEmpty())
+	{
+		noticeLabel->setText(Vietnamese::red(L"Chưa chọn thư mục để sao chép đến"));
+		return;
+	}
+
 	QList<QPair<QString, QString>> files;
 	for (int r = 0; r < mCopyModel->rowCount(); ++r)
 	{
-		QString name = mCopyModel->item(r, 0)->text();
 		QString path = mCopyModel->item(r, 2)->text();
+		QString name = QFileInfo(path).baseName();
 		files.append(QPair<QString, QString>(name, path));
 	}
-	QString format = fileFormatLineEdit->text().trimmed();
-	if (format.isEmpty())
-		format = "pdf";
 
-	Copier* copier = new Copier(files, format, copyDirLineEdit->text());
+	Copier* copier = new Copier(files, dstDir);
 
 	QThread* thread = new QThread;
 	copier->moveToThread(thread);
@@ -117,8 +115,6 @@ void MainWindow::copy()
 
 void MainWindow::scannerStarted()
 {
-	fileProgressLineEdit->show();
-	fileProgressLineEdit->clear();
 	mNameDateTimesMap.clear();
 	mResultRowMap.clear();
 	while (mResultModel->rowCount() > 0)
@@ -128,13 +124,13 @@ void MainWindow::scannerStarted()
 
 void MainWindow::scannerFinished()
 {
-	fileProgressLineEdit->hide();
-	resultTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mResultModel->rowCount()));
+	noticeLabel->setText(Vietnamese::str(L"Đã quét xong"));
+	resultGroupBox->setTitle(Vietnamese::str(L"Kết quả quét [ %1 ]").arg(mResultModel->rowCount()));
 }
 
 void MainWindow::scannerNotice(const QString& message)
 {
-	fileProgressLineEdit->setText(message);
+	noticeLabel->setText(message);
 }
 
 void MainWindow::scannerDetection(const QString& name, const QString& path, const QDateTime& dateTime)
@@ -161,7 +157,7 @@ void MainWindow::scannerDetection(const QString& name, const QString& path, cons
 		mResultModel->setItem(row, 1, new QStandardItem(dateTime.toString("dd/MM/yyyy hh:mm:ss")));
 		mResultModel->setItem(row, 2, new QStandardItem(path));
 		mResultRowMap.insert(correctName, row);
-		resultTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mResultModel->rowCount()));
+		resultGroupBox->setTitle(Vietnamese::str(L"Kết quả quét [ %1 ]").arg(mResultModel->rowCount()));
 	}
 }
 
@@ -169,25 +165,25 @@ void MainWindow::copierStarted()
 {
 	progressBar->show();
 	progressBar->setValue(0);
-	qDebug() << "----- BEGIN COPY REPORT -----";
+	plainTextEdit->clear();
+	plainTextEdit->appendPlainText(Vietnamese::str(L"Bắt đầu sao chép"));
 }
 
 void MainWindow::copierFinished()
 {
 	progressBar->hide();
-	noticeLabel->clear();
-	QMessageBox::information(this, "vMFSC", Vietnamese::str(L"Quá trình sao chép đã hoàn tất"));
-	qDebug() << "----- END COPY REPORT -----";
+	noticeLabel->setText(Vietnamese::str(L"Đã sao chép xong"));
+	plainTextEdit->appendPlainText(Vietnamese::str(L"Hoàn thành sao chép"));
 }
 
 void MainWindow::copySuccess(const QString& name)
 {
-	qDebug() << "  OK   | " << name;
+	plainTextEdit->appendPlainText("   OK    | " + name);
 }
 
 void MainWindow::copyFailed(const QString& name)
 {
-	qDebug() << "FAILED | " << name;
+	plainTextEdit->appendPlainText(" FAILED  | " + name);
 }
 
 void MainWindow::copyProgress(const QString& path)
@@ -230,7 +226,7 @@ void MainWindow::add()
 	mCopyModel->setItem(count, 0, mResultModel->item(row, 0)->clone());
 	mCopyModel->setItem(count, 1, mResultModel->item(row, 1)->clone());
 	mCopyModel->setItem(count, 2, mResultModel->item(row, 2)->clone());
-	copyTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mCopyModel->rowCount()));
+	copyGroupBox->setTitle(Vietnamese::str(L"Kết quả chọn [ %1 ]").arg(mCopyModel->rowCount()));
 }
 
 void MainWindow::addFromFile()
@@ -242,7 +238,8 @@ void MainWindow::addFromFile()
 		QFile file(fileName);
 		if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
-			qDebug() << "----- BEGIN SELECTING NAME -----";
+			plainTextEdit->clear();
+			plainTextEdit->appendPlainText(Vietnamese::str(L"Bắt đầu chọn từ file"));
 			QTextStream stream(&file);
 			while (stream.atEnd() == false)
 			{
@@ -250,8 +247,8 @@ void MainWindow::addFromFile()
 				addNameCopy(name);
 			}
 			file.close();
-			qDebug() << "----- END SELECTING NAME -----";
-			copyTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mCopyModel->rowCount()));
+			plainTextEdit->appendPlainText(Vietnamese::str(L"Kết thúc chọn từ file"));
+			copyGroupBox->setTitle(Vietnamese::str(L"Kết quả chọn [ %1 ]").arg(mCopyModel->rowCount()));
 		}
 	}
 }
@@ -268,7 +265,7 @@ void MainWindow::addAll()
 		mCopyModel->setItem(count, 2, mResultModel->item(i, 2)->clone());
 		mCopyNameMap.insert(mResultModel->item(i, 0)->text(), true);
 	}
-	copyTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mCopyModel->rowCount()));
+	copyGroupBox->setTitle(Vietnamese::str(L"Kết quả chọn [ %1 ]").arg(mCopyModel->rowCount()));
 }
 
 void MainWindow::remove()
@@ -280,7 +277,7 @@ void MainWindow::remove()
 	int row = index.row();
 	mCopyNameMap.remove(mCopyModel->item(row, 0)->text());
 	mCopyModel->takeRow(row);
-	copyTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mCopyModel->rowCount()));
+	copyGroupBox->setTitle(Vietnamese::str(L"Kết quả chọn [ %1 ]").arg(mCopyModel->rowCount()));
 }
 
 void MainWindow::removeAll()
@@ -288,7 +285,7 @@ void MainWindow::removeAll()
 	mCopyNameMap.clear();
 	while (mCopyModel->rowCount() > 0)
 		mCopyModel->removeRows(0, 1);
-	copyTotalLabel->setText(Vietnamese::str(L"Số lượng: %1").arg(mCopyModel->rowCount()));
+	copyGroupBox->setTitle(Vietnamese::str(L"Kết quả chọn [ %1 ]").arg(mCopyModel->rowCount()));
 }
 
 void MainWindow::regExpComboBoxChanged(const QString& text)
@@ -413,6 +410,7 @@ void MainWindow::addNameCopy(const QString& name)
 		int row = mResultRowMap[name];
 		if (mCopyNameMap[name] == true)
 			return;
+		plainTextEdit->appendPlainText("   CO    | " + name);
 
 		mCopyNameMap.insert(name, true);
 		int count = mCopyModel->rowCount();
@@ -423,6 +421,6 @@ void MainWindow::addNameCopy(const QString& name)
 	}
 	else
 	{
-		qDebug() << name << " KHONG_CO";
+		plainTextEdit->appendPlainText("KHONG_CO | " + name);
 	}
 }

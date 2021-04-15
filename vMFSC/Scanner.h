@@ -11,8 +11,8 @@ public:
 	Scanner();
 	QString mFolder;
 	QString mRegExp;
-	bool mFileFilter;
-	bool mFolderFilter;
+	bool mFileFilter = true;
+	bool mParentDir = true;
 	QString mFormat;
 
 private slots:

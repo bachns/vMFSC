@@ -3,5 +3,6 @@
         <file>icons/scan.svg</file>
         <file>icons/start.svg</file>
         <file>icons/vMFSC.svg</file>
+        <file>icons/folder.svg</file>
     </qresource>
 </RCC>

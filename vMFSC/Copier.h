@@ -11,7 +11,7 @@ class Copier : public QObject
 	Q_OBJECT
 
 public:
-	Copier(const QList<QPair<QString, QString>>& files, const QString& format, const QString& destinationDir);
+	Copier(const QList<QPair<QString, QString>>& files, const QString& destinationDir);
 
 private slots:
 	void run();
@@ -27,7 +27,7 @@ signals:
 private:
 	QList<QPair<QString, QString>> mFiles;
 	QString mDestinationDir;
-	QString mFormat;
+	void copyDir(const QString& sourceDir, const QString& destinationDir);
 };
 
 #endif

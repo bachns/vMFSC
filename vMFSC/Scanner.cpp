@@ -18,6 +18,7 @@ void Scanner::run()
 		emit notice(path);
 		QFileInfo fileInfo(path);
 		QString& name = fileInfo.fileName();
+		QString& basename = fileInfo.baseName();
 		QDateTime dateTime = fileInfo.lastModified();
 		if (re.exactMatch(name))
 		{
@@ -29,7 +30,7 @@ void Scanner::run()
 				path = dir.path();
 				level--;
 			}
-			emit detection(name, path, dateTime);
+			emit detection(basename, path, dateTime);
 		}
 	}
 	emit finished();

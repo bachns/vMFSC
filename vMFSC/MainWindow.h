@@ -43,7 +43,11 @@ private slots:
 	void regExpLineEditChanged(const QString& text);
 	void suffixComboBoxChanged(const QString& text);
 
+	void resultExplorer();
+	void copyExplorer();
+
 private:
+	void explorer(const QString& fileName);
 	QString processName(const QString& name);
 	void addNameCopy(const QString& name);
 	QMap<QString, QPair<QString, QDateTime>> mNameDateTimesMap;

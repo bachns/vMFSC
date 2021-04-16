@@ -9,6 +9,7 @@
 #include <QStandardItemModel>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QProcess>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(regExpComboBox, &QComboBox::currentTextChanged, this, &MainWindow::regExpComboBoxChanged);
 	connect(suffixComboBox, &QComboBox::currentTextChanged, this, &MainWindow::suffixComboBoxChanged);
 	connect(regExpLineEdit, &QLineEdit::textChanged, this, &MainWindow::regExpLineEditChanged);
+	connect(resultGotoButton, &QPushButton::clicked, this, &MainWindow::resultExplorer);
+	connect(copyGotoButton, &QPushButton::clicked, this, &MainWindow::copyExplorer);
 	connect(scanButton, &QPushButton::clicked, this, &MainWindow::scan);
 	connect(copyButton, &QPushButton::clicked, this, &MainWindow::copy);
 	
@@ -33,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 	mResultModel->setHeaderData(1, Qt::Horizontal, Vietnamese::str(L"Thời gian"));
 	mResultModel->setHeaderData(2, Qt::Horizontal, Vietnamese::str(L"Đường dẫn"));
 	resultTableView->setModel(mResultModel);
+	resultTableView->setSortingEnabled(true);
 	resultTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	resultTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 	resultTableView->horizontalHeader()->setStretchLastSection(true);
@@ -42,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
 	mCopyModel->setHeaderData(1, Qt::Horizontal, Vietnamese::str(L"Thời gian"));
 	mCopyModel->setHeaderData(2, Qt::Horizontal, Vietnamese::str(L"Đường dẫn"));
 	copyTableView->setModel(mCopyModel);
+	copyTableView->setSortingEnabled(true);
 	copyTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	copyTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 	copyTableView->horizontalHeader()->setStretchLastSection(true);
@@ -105,7 +110,7 @@ void MainWindow::copy()
 	for (int r = 0; r < mCopyModel->rowCount(); ++r)
 	{
 		QString path = mCopyModel->item(r, 2)->text();
-		QString name = QFileInfo(path).baseName();
+		QString name = QFileInfo(path).fileName();
 		files.append(QPair<QString, QString>(name, path));
 	}
 
@@ -139,7 +144,7 @@ void MainWindow::scannerStarted()
 
 void MainWindow::scannerFinished()
 {
-	noticeLabel->setText(Vietnamese::str(L"Đã quét xong"));
+	noticeLabel->setText(Vietnamese::green(L"Đã quét xong"));
 	resultGroupBox->setTitle(Vietnamese::str(L"Kết quả quét [ %1 ]").arg(mResultModel->rowCount()));
 }
 
@@ -187,7 +192,7 @@ void MainWindow::copierStarted()
 void MainWindow::copierFinished()
 {
 	progressBar->hide();
-	noticeLabel->setText(Vietnamese::str(L"Đã sao chép xong"));
+	noticeLabel->setText(Vietnamese::green(L"Đã sao chép xong"));
 	plainTextEdit->appendPlainText(Vietnamese::str(L"Hoàn thành sao chép"));
 }
 
@@ -368,6 +373,26 @@ void MainWindow::suffixComboBoxChanged(const QString& text)
 	}
 }
 
+void MainWindow::resultExplorer()
+{
+	auto index = resultTableView->currentIndex();
+	if (index.isValid())
+	{
+		auto text = mResultModel->item(index.row(), 2)->text();
+		explorer(text);
+	}
+}
+
+void MainWindow::copyExplorer()
+{
+	auto index = copyTableView->currentIndex();
+	if (index.isValid())
+	{
+		auto text = mCopyModel->item(index.row(), 2)->text();
+		explorer(text);
+	}
+}
+
 QString MainWindow::processName(const QString& name)
 {
 	if (mUserFilter)
@@ -450,4 +475,14 @@ void MainWindow::addNameCopy(const QString& name)
 	{
 		plainTextEdit->appendPlainText("KHONG_CO | " + name);
 	}
+}
+
+void MainWindow::explorer(const QString& fileName)
+{
+	const QFileInfo fileInfo(fileName);
+	QStringList param;
+	if (!fileInfo.isDir())
+		param += QLatin1String("/select,");
+	param += QDir::toNativeSeparators(fileInfo.canonicalFilePath());
+	QProcess::startDetached("explorer.exe", param);
 }

@@ -17,7 +17,7 @@ void Copier::run()
 		const QString& src = p.second;
 		emit progress(src);
 		QString dst = QString("%1/%2").arg(mDestinationDir).arg(p.first);
-		if (QFileInfo(dst).isFile())
+		if (QFileInfo(src).isFile())
 		{
 			QFile::remove(dst);
 			if (QFile::copy(src, dst))

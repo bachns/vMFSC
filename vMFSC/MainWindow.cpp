@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(removeButton, &QPushButton::clicked, this, &MainWindow::remove);
 	connect(removeAllButton, &QPushButton::clicked, this, &MainWindow::removeAll);
 	connect(regExpComboBox, &QComboBox::currentTextChanged, this, &MainWindow::regExpComboBoxChanged);
+	connect(suffixComboBox, &QComboBox::currentTextChanged, this, &MainWindow::suffixComboBoxChanged);
 	connect(regExpLineEdit, &QLineEdit::textChanged, this, &MainWindow::regExpLineEditChanged);
 	connect(scanButton, &QPushButton::clicked, this, &MainWindow::scan);
 	connect(copyButton, &QPushButton::clicked, this, &MainWindow::copy);
@@ -45,19 +46,33 @@ MainWindow::MainWindow(QWidget *parent)
 	copyTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 	copyTableView->horizontalHeader()->setStretchLastSection(true);
 
-	mRegExp25 = "\\d{4}(\\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)(\\s+|_+|-+)*(DB|\\x0110B|TB|DN|\\x0110N|TN)(\\s+|_+|-+)*(TT|tt)?";
-	mRegExp50 = "\\d{4}(\\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)(\\s+|_+|-+)*(TT|tt)?";
-	mRegExp100 = "\\d{4}(\\s+|_+|-+)*(TT|tt)?";
-	mRegExp250 = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*(TT|tt)?";
-	mRegExp500 = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*(a|A|b|B|c|C|d|D)(\\s+|_+|-+)*(TT|tt)?";
-	mRegExp1M = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*(TT|tt)?";
+	mRegExp25 = "\\d{4}(\\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)(\\s+|_+|-+)*(DB|\\x0110B|TB|DN|\\x0110N|TN)";
+	mRegExp50 = "\\d{4}(\\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)";
+	mRegExp100 = "\\d{4}";
+	mRegExp250 = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*\\d{1,2}";
+	mRegExp500 = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}(\\s+|_+|-+)*(a|A|b|B|c|C|d|D)";
+	mRegExp1M = "[A-Za-z]{2}(\\s+|_+|-+)*\\d{1,2}";
+
+	mSuffixRegExp.insert("tt.pdf", "(\\s+|_+|-+)*(TT|tt)?\\.pdf");
+	mSuffixRegExp.insert("cb.pdf", "(\\s+|_+|-+)*(CB|cb)?\\.pdf");
+	mSuffixRegExp.insert("cs.dgn", "(\\s+|_+|-+)*(CS|cs)?\\.dgn");
+	mSuffixRegExp.insert("mdb", "\\.mdb");
+	mSuffixRegExp.insert("gdb", "\\.gdb");
+	mSuffixRegExp.insert(Vietnamese::str(L"Khác"), "");
+
+	suffixComboBox->addItem("tt.pdf");
+	suffixComboBox->addItem("cb.pdf");
+	suffixComboBox->addItem("cs.dgn");
+	suffixComboBox->addItem("mdb");
+	suffixComboBox->addItem("gdb");
+	suffixComboBox->addItem(Vietnamese::str(L"Khác"));
 }
 
 void MainWindow::scan()
 {
 	Scanner* scanner = new Scanner;
 	scanner->mFolder = scanDirLineEdit->text();
-	scanner->mRegExp = regExpLineEdit->text();
+	scanner->mRegExp = regExpLineEdit->text() + mSuffixRegExp.value(suffixComboBox->currentText(), "");
 	scanner->mFileFilter = fileRadioButton->isChecked();
 	scanner->mParentDirLevel = parentLevelSpinBox->value();
 
@@ -339,6 +354,18 @@ void MainWindow::regExpLineEditChanged(const QString& text)
 		regExpComboBox->setCurrentIndex(5);
 	else
 		regExpComboBox->setCurrentIndex(6);
+}
+
+void MainWindow::suffixComboBoxChanged(const QString& text)
+{
+	if (text == "gdb")
+	{
+		folderRadioButton->setChecked(true);
+	}
+	else
+	{
+		fileRadioButton->setChecked(true);
+	}
 }
 
 QString MainWindow::processName(const QString& name)

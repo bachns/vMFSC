@@ -105,9 +105,19 @@
          <item>
           <widget class="QLineEdit" name="regExpLineEdit">
            <property name="text">
-            <string>\d{4}(\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)(\s+|_+|-+)*(DB|\x0110B|TB|DN|\x0110N|TN)(\s+|_+|-+)*(TT|tt)?</string>
+            <string>\d{4}(\s+|_+|-+)*(i{0,3}I{0,3}|1|2|3|4|iv|IV)(\s+|_+|-+)*(DB|\x0110B|TB|DN|\x0110N|TN)</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Loại tệp tin:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="suffixComboBox"/>
          </item>
         </layout>
        </item>

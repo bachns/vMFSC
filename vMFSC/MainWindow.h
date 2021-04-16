@@ -41,11 +41,13 @@ private slots:
 	void removeAll();
 	void regExpComboBoxChanged(const QString& text);
 	void regExpLineEditChanged(const QString& text);
+	void suffixComboBoxChanged(const QString& text);
 
 private:
 	QString processName(const QString& name);
 	void addNameCopy(const QString& name);
 	QMap<QString, QPair<QString, QDateTime>> mNameDateTimesMap;
+	QMap<QString, QString> mSuffixRegExp;
 	QMap<QString, int> mResultRowMap;
 	QMap<QString, bool> mCopyNameMap;
 	QStandardItemModel* mResultModel;

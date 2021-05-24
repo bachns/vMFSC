@@ -14,6 +14,7 @@ public:
 	bool mFileFilter = true;
 	int mParentDirLevel = 0;
 	QString mFormat;
+	bool mGdbFilter = false;
 
 private slots:
 	void run();

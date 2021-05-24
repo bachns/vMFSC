@@ -346,7 +346,14 @@
         </item>
        </layout>
       </widget>
-      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      <widget class="QPlainTextEdit" name="plainTextEdit">
+       <property name="font">
+        <font>
+         <family>Courier</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </widget>
     </item>
     <item row="3" column="0" colspan="2">

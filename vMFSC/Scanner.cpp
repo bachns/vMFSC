@@ -10,11 +10,14 @@ Scanner::Scanner()
 void Scanner::run()
 {
 	emit started();
-	QRegExp re(mRegExp);
+	QRegExp re(mRegExp, Qt::CaseInsensitive);
 	QDirIterator it(mFolder, mFileFilter ? QDir::Files : QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 	while (it.hasNext())
 	{
 		QString path = it.next();
+		if (mGdbFilter == false && path.indexOf(".gdb", 0, Qt::CaseInsensitive) >= 0)
+			continue;
+
 		emit notice(path);
 		QFileInfo fileInfo(path);
 		QString& name = fileInfo.fileName();

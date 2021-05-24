@@ -80,6 +80,7 @@ void MainWindow::scan()
 	scanner->mRegExp = regExpLineEdit->text() + mSuffixRegExp.value(suffixComboBox->currentText(), "");
 	scanner->mFileFilter = fileRadioButton->isChecked();
 	scanner->mParentDirLevel = parentLevelSpinBox->value();
+	scanner->mGdbFilter = suffixComboBox->currentText() == "gdb";
 
 	QThread* thread = new QThread;
 	scanner->moveToThread(thread);
@@ -164,7 +165,7 @@ void MainWindow::scannerDetection(const QString& name, const QString& path, cons
 			pair.first = path;
 			pair.second = dateTime;
 			int row = mResultRowMap[correctName];
-			mResultModel->setItem(row, 1, new QStandardItem(dateTime.toString("dd/MM/yyyy hh:mm:ss")));
+			mResultModel->setItem(row, 1, new QStandardItem(dateTime.toString("yyyy-MM-dd")));
 			mResultModel->setItem(row, 2, new QStandardItem(path));
 		}
 	}
@@ -174,7 +175,7 @@ void MainWindow::scannerDetection(const QString& name, const QString& path, cons
 		int row = mResultModel->rowCount();
 		mResultModel->insertRow(row);
 		mResultModel->setItem(row, 0, new QStandardItem(correctName));
-		mResultModel->setItem(row, 1, new QStandardItem(dateTime.toString("dd/MM/yyyy hh:mm:ss")));
+		mResultModel->setItem(row, 1, new QStandardItem(dateTime.toString("yyyy-MM-dd")));
 		mResultModel->setItem(row, 2, new QStandardItem(path));
 		mResultRowMap.insert(correctName, row);
 		resultGroupBox->setTitle(Vietnamese::str(L"Kết quả quét [ %1 ]").arg(mResultModel->rowCount()));
